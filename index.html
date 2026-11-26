@@ -1,205 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Infinity Clock</title>
-  <style>
-    :root {
-      color-scheme: dark;
-      --accent: #b99aff;
-      --panel: rgba(255,255,255,.10);
-      --border: rgba(255,255,255,.20);
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      color: #fff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(ellipse at 20% 15%, #542b9d 0, transparent 42%),
-        radial-gradient(ellipse at 85% 85%, #173f91 0, transparent 43%),
-        #11142b;
-    }
-    main {
-      width: min(100%, 560px);
-      padding: 30px;
-      text-align: center;
-      border: 1px solid var(--border);
-      border-radius: 28px;
-      background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.055));
-      box-shadow: 0 24px 80px #05061788, inset 0 1px 0 #ffffff25;
-      backdrop-filter: blur(22px);
-    }
-    h1 { margin: 0 0 22px; font-size: 1.35rem; letter-spacing: .04em; }
-    nav { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-    button, input {
-      color: white;
-      font: inherit;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: var(--panel);
-    }
-    button { padding: 10px 16px; cursor: pointer; transition: .2s; }
-    button:hover, button.active { background: var(--accent); color: #171027; }
-    #display {
-      margin: 35px 0 10px;
-      font-size: clamp(2.8rem, 12vw, 5rem);
-      font-weight: 650;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: .03em;
-    }
-    #date { min-height: 1.5em; color: #e0d8fa; }
-    .controls { display: flex; justify-content: center; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
-    .entry { margin-top: 20px; }
-    input { width: 85px; padding: 10px; text-align: center; }
-    .hidden { display: none; }
-    #message { min-height: 1.5em; margin-top: 16px; color: #ffe48a; }
-    @media (max-width: 420px) { main { padding: 22px 16px; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infinity Clock</title>
+<style>
+:root{--bg:radial-gradient(circle at 20% 20%,#24105a 0%,#11062d 48%,#05020c 100%);--glass:rgba(255,255,255,.1);--glass-light:rgba(255,255,255,.16);--border:rgba(255,255,255,.2);--text:#fff;--muted:rgba(255,255,255,.62);--accent:#a855f7;--dot:#c084fc;--glow:0 0 14px rgba(192,132,252,.75)}
+[data-theme=sunset]{--bg:radial-gradient(circle at 20% 20%,#551b35,#210b18 55%,#090207);--accent:#e11d48;--dot:#fb7185;--glow:0 0 14px rgba(251,113,133,.75)}
+[data-theme=ocean]{--bg:radial-gradient(circle at 20% 20%,#075985,#031525 70%);--accent:#0284c7;--dot:#38bdf8;--glow:0 0 14px rgba(56,189,248,.75)}
+[data-theme=mint]{--bg:radial-gradient(circle at 20% 20%,#064e3b,#01140f 70%);--accent:#059669;--dot:#34d399;--glow:0 0 14px rgba(52,211,153,.75)}
+[data-theme=clean]{--bg:radial-gradient(circle at 20% 20%,#334155,#0f172a 70%);--accent:#64748b;--dot:#f8fafc;--glow:0 0 14px rgba(248,250,252,.7)}
+[data-theme=midnight]{--bg:radial-gradient(circle at 20% 20%,#1e293b,#030712 70%);--accent:#4f46e5;--dot:#818cf8;--glow:0 0 14px rgba(129,140,248,.75)}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:grid;place-items:center;overflow:hidden;transition:background .5s}.ambient{position:fixed;width:520px;height:520px;border-radius:50%;background:var(--accent);opacity:.25;filter:blur(130px);pointer-events:none}.container{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:20px}.brand{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}.clock-card,.modal-card{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04));border:1px solid var(--border);box-shadow:0 28px 70px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.25);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}.clock-card{position:relative;border-radius:30px;padding:48px 42px 26px;display:flex;flex-direction:column;gap:24px}.mode-pill{position:absolute;top:14px;right:16px;display:flex;align-items:center;padding:3px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px rgba(255,255,255,.12);backdrop-filter:blur(16px);z-index:4}.mode-pill-slider{position:absolute;top:3px;left:3px;height:calc(100% - 6px);border-radius:999px;background:var(--accent);box-shadow:0 4px 14px color-mix(in srgb,var(--accent),transparent 45%),inset 0 1px rgba(255,255,255,.35);transition:transform .28s cubic-bezier(.22,1,.36,1),width .28s cubic-bezier(.22,1,.36,1);pointer-events:none}.mode-pill-btn{position:relative;z-index:1;border:0;background:transparent;color:var(--muted);padding:5px 11px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;transition:color .2s}.mode-pill-btn.active{color:#fff}.clock-display{display:flex;align-items:center;justify-content:center;gap:16px}.digit-group{display:flex;gap:12px}.group-spacing{margin-right:10px}.digit-grid{display:grid;grid-template-columns:repeat(4,14px);grid-template-rows:repeat(7,14px);gap:7px}.digit-grid.sec-digit{grid-template-columns:repeat(4,10px);grid-template-rows:repeat(7,10px);gap:5px}.dot{width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.06)}.dot.active{background:var(--dot);box-shadow:var(--glow)}.colon{display:flex;flex-direction:column;gap:19px;padding:0 5px}.colon-dot{width:12px;height:12px;border-radius:50%;background:var(--dot);box-shadow:var(--glow);animation:pulse 2s infinite}.sec-group{display:flex;align-items:center;gap:8px;margin-left:8px;padding-left:12px;border-left:1px solid rgba(255,255,255,.14)}@keyframes pulse{50%{opacity:.4;transform:scale(.85)}}.info{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:var(--muted);min-height:36px}.mode-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.glass-btn,.timer-input{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.09);color:#fff;border-radius:999px;font-size:12px;font-weight:600;backdrop-filter:blur(12px)}.glass-btn{padding:6px 14px;cursor:pointer;transition:background .2s,transform .15s}.glass-btn:hover{background:rgba(255,255,255,.18);transform:translateY(-1px)}.glass-btn.primary{background:var(--accent);border-color:transparent;box-shadow:0 4px 14px color-mix(in srgb,var(--accent),transparent 45%)}.timer-input{width:54px;padding:5px 8px;text-align:center;outline:none}.timer-input::placeholder{color:var(--muted)}.timer-status{font-size:12px;color:var(--dot);font-weight:600}.settings-btn{position:absolute;right:10px;bottom:-48px;width:38px;height:38px;border:1px solid var(--border);border-radius:50%;background:rgba(255,255,255,.1);color:var(--muted);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(15px);z-index:5}.settings-btn:hover{background:var(--glass-light);color:#fff;transform:scale(1.06)}.modal-overlay{position:fixed;inset:0;background:rgba(3,1,12,.58);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s;z-index:9999;padding:20px}.modal-overlay.active{opacity:1;visibility:visible;pointer-events:auto}.modal-card{width:min(380px,100%);border-radius:28px;padding:28px;transform:translateY(18px) scale(.98);transition:transform .25s}.modal-overlay.active .modal-card{transform:translateY(0) scale(1)}.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}.modal-title{font-size:17px;font-weight:700}.close-btn{border:0;background:rgba(255,255,255,.1);color:var(--muted);width:30px;height:30px;border-radius:50%;font-size:20px;cursor:pointer}.settings-group{display:flex;flex-direction:column;gap:14px}.setting-row{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:14px}.pill,.toggle-switch,.theme-option{border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.22);box-shadow:inset 0 1px rgba(255,255,255,.1);border-radius:999px}.segmented-control{display:flex;padding:4px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.15)}.segment-btn{border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:999px;font-size:12px;cursor:pointer}.segment-btn.active{background:var(--accent);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--accent),transparent 45%)}.toggle-switch{position:relative;width:48px;height:27px;cursor:pointer;background:rgba(255,255,255,.1);flex:none}.toggle-switch.active{background:var(--accent)}.toggle-thumb{position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.35);transition:transform .2s}.toggle-switch.active .toggle-thumb{transform:translateX(21px)}.theme-wrap{width:100%;display:flex;flex-direction:column;gap:9px}.theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}.theme-option{padding:9px 5px;text-align:center;color:var(--muted);font-size:11px;cursor:pointer}.theme-option:hover,.theme-option.active{color:#fff;border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 70%)}.hidden{display:none!important}@media(max-width:520px){.clock-card{padding:46px 18px 22px}.clock-display{gap:9px}.digit-group{gap:7px}.digit-grid{grid-template-columns:repeat(4,11px);grid-template-rows:repeat(7,11px);gap:5px}.colon-dot{width:9px;height:9px}.theme-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
-<body>
-  <main>
-    <h1>✦ Infinity Clock</h1>
-    <nav aria-label="Clock modes">
-      <button class="mode active" data-mode="clock">Clock</button>
-      <button class="mode" data-mode="stopwatch">Stopwatch</button>
-      <button class="mode" data-mode="timer">Timer</button>
-    </nav>
-
-    <div id="display">--:--:--</div>
-    <div id="date"></div>
-
-    <div id="stopwatchControls" class="controls hidden">
-      <button id="startWatch">Start</button>
-      <button id="resetWatch">Reset</button>
+<body data-theme="violet">
+<div class="ambient"></div>
+<main class="container">
+  <div class="brand">Infinity Clock</div>
+  <section class="clock-card">
+    <div class="mode-pill" id="modePill" role="tablist" aria-label="Clock mode">
+      <div class="mode-pill-slider" id="modeSlider"></div>
+      <button type="button" class="mode-pill-btn active" data-mode="clock">Clock</button>
+      <button type="button" class="mode-pill-btn" data-mode="stopwatch">Stopwatch</button>
+      <button type="button" class="mode-pill-btn" data-mode="timer">Timer</button>
     </div>
 
-    <div id="timerEntry" class="entry hidden">
-      <input id="minutes" type="number" min="0" max="999" placeholder="Minutes" aria-label="Timer minutes">
-      <input id="seconds" type="number" min="0" max="59" placeholder="Seconds" aria-label="Timer seconds">
+    <div class="clock-display">
+      <div class="digit-group">
+        <div class="digit-grid" data-digit="h1"></div>
+        <div class="digit-grid group-spacing" data-digit="h2"></div>
+      </div>
+      <div class="colon"><i class="colon-dot"></i><i class="colon-dot"></i></div>
+      <div class="digit-group">
+        <div class="digit-grid" data-digit="m1"></div>
+        <div class="digit-grid" data-digit="m2"></div>
+      </div>
+      <div class="sec-group hidden" id="secGroup">
+        <div class="colon"><i class="colon-dot" style="width:8px;height:8px"></i><i class="colon-dot" style="width:8px;height:8px"></i></div>
+        <div class="digit-group">
+          <div class="digit-grid sec-digit" data-digit="s1"></div>
+          <div class="digit-grid sec-digit" data-digit="s2"></div>
+        </div>
+      </div>
     </div>
-    <div id="timerControls" class="controls hidden">
-      <button id="startTimer">Start timer</button>
-      <button id="resetTimer">Reset</button>
+
+    <div class="info" id="infoRow">
+      <span id="ampmDisplay">PM</span>
+      <span id="dateDisplay">Wed, Nov 18</span>
     </div>
-    <div id="message"></div>
-  </main>
 
-  <script>
-    const display = document.getElementById("display");
-    const dateLine = document.getElementById("date");
-    const message = document.getElementById("message");
-    const watchControls = document.getElementById("stopwatchControls");
-    const timerEntry = document.getElementById("timerEntry");
-    const timerControls = document.getElementById("timerControls");
+    <div class="info hidden" id="stopwatchRow">
+      <div class="mode-actions">
+        <button type="button" class="glass-btn primary" id="swStartBtn">Start</button>
+        <button type="button" class="glass-btn" id="swResetBtn">Reset</button>
+      </div>
+      <span class="timer-status" id="swStatus">Ready</span>
+    </div>
 
-    let mode = "clock";
-    let watchElapsed = 0;
-    let watchStartedAt = 0;
-    let watchRunning = false;
-    let timerRemaining = 0;
-    let timerEndsAt = 0;
-    let timerRunning = false;
+    <div class="info hidden" id="timerRow">
+      <div class="mode-actions">
+        <input type="number" class="timer-input" id="timerMin" min="0" max="99" placeholder="Min" aria-label="Minutes">
+        <input type="number" class="timer-input" id="timerSec" min="0" max="59" placeholder="Sec" aria-label="Seconds">
+        <button type="button" class="glass-btn primary" id="tmStartBtn">Start</button>
+        <button type="button" class="glass-btn" id="tmResetBtn">Reset</button>
+      </div>
+      <span class="timer-status" id="tmStatus"></span>
+    </div>
 
-    function formatTime(totalSeconds, showHours = true) {
-      totalSeconds = Math.max(0, Math.floor(totalSeconds));
-      const hours = Math.floor(totalSeconds / 3600);
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      const pad = n => String(n).padStart(2, "0");
-      return showHours || hours ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${pad(minutes)}:${pad(seconds)}`;
+    <button type="button" class="settings-btn" id="settingsBtn" aria-label="Open settings">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v3m0 14v3M4.93 4.93l2.12 2.12m9.9 9.9 2.12 2.12M2 12h3m14 0h3M4.93 19.07l2.12-2.12m9.9-9.9 2.12-2.12"/><circle cx="12" cy="12" r="4"/></svg>
+    </button>
+  </section>
+</main>
+
+<div class="modal-overlay" id="settingsModal">
+  <section class="modal-card" role="dialog" aria-modal="true" aria-label="Clock settings">
+    <header class="modal-header">
+      <div class="modal-title">Clock Settings</div>
+      <button type="button" class="close-btn" id="closeModal">&times;</button>
+    </header>
+    <div class="settings-group">
+      <div class="setting-row">
+        <span>Clock format</span>
+        <div class="segmented-control">
+          <button type="button" class="segment-btn active" data-format="12">12-hour</button>
+          <button type="button" class="segment-btn" data-format="24">24-hour</button>
+        </div>
+      </div>
+      <div class="setting-row"><span>Show seconds</span><div class="toggle-switch" id="toggleSec"><div class="toggle-thumb"></div></div></div>
+      <div class="setting-row"><span>Show date</span><div class="toggle-switch active" id="toggleDate"><div class="toggle-thumb"></div></div></div>
+      <div class="setting-row"><span>Show AM / PM</span><div class="toggle-switch active" id="toggleAmPm"><div class="toggle-thumb"></div></div></div>
+      <div class="theme-wrap">
+        <span>Theme</span>
+        <div class="theme-grid">
+          <div class="theme-option active" data-theme="violet">Violet Glass</div>
+          <div class="theme-option" data-theme="sunset">Sunset Glow</div>
+          <div class="theme-option" data-theme="ocean">Ocean Blue</div>
+          <div class="theme-option" data-theme="mint">Mint Aurora</div>
+          <div class="theme-option" data-theme="clean">Clean White</div>
+          <div class="theme-option" data-theme="midnight">Midnight Glass</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const patterns={0:[1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1],1:[0,0,1,0,0,1,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,1,1,1],2:[1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1],3:[1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1],4:[1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,0,0,0,1],5:[1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1],6:[1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1],7:[1,1,1,1,0,0,0,1,0,0,1,0,0,1,0,0,0,1,0,0,0,1,0,0,0,1,0,0],8:[1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1],9:[1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1]};
+const grids={};
+document.querySelectorAll('.digit-grid').forEach(g=>{
+  grids[g.dataset.digit]=[];
+  for(let i=0;i<28;i++){const d=document.createElement('i');d.className='dot';g.appendChild(d);grids[g.dataset.digit].push(d)}
+});
+function render(k,n){(grids[k]||[]).forEach((d,i)=>d.classList.toggle('active',patterns[n]?.[i]===1))}
+function renderDigits(p1,p2,p3='00'){
+  [['h1',p1[0]],['h2',p1[1]],['m1',p2[0]],['m2',p2[1]],['s1',p3[0]],['s2',p3[1]]].forEach(x=>render(x[0],x[1]));
+}
+
+let settings={format:'12',showSec:false,showDate:true,showAmPm:true,theme:'violet'};
+try{Object.assign(settings,JSON.parse(localStorage.getItem('infinity_clock_settings')||'{}'))}catch(e){}
+const $=id=>document.getElementById(id);
+
+let mode='clock';
+let swElapsed=0,swStart=0,swRunning=false;
+let tmTotalMs=0,tmEnd=0,tmRunning=false;
+
+function moveModeSlider(){
+  const active=document.querySelector('.mode-pill-btn.active');
+  const slider=$('modeSlider');
+  if(!active||!slider)return;
+  slider.style.width=active.offsetWidth+'px';
+  slider.style.transform=`translateX(${active.offsetLeft-3}px)`;
+}
+
+function setMode(next){
+  mode=next;
+  document.querySelectorAll('.mode-pill-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  moveModeSlider();
+  $('infoRow').classList.toggle('hidden',mode!=='clock');
+  $('stopwatchRow').classList.toggle('hidden',mode!=='stopwatch');
+  $('timerRow').classList.toggle('hidden',mode!=='timer');
+  $('secGroup').classList.toggle('hidden',mode==='clock'?!settings.showSec:mode==='timer');
+  update();
+}
+
+function playBeep(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type='sine';osc.frequency.value=880;
+    gain.gain.setValueAtTime(0.15,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start();osc.stop(ctx.currentTime+0.5);
+  }catch(e){}
+}
+
+function apply(){
+  document.querySelectorAll('.segment-btn').forEach(b=>b.classList.toggle('active',b.dataset.format===settings.format));
+  [['toggleSec','showSec'],['toggleDate','showDate'],['toggleAmPm','showAmPm']].forEach(([id,key])=>$(id).classList.toggle('active',settings[key]));
+  if(mode==='clock')$('secGroup').classList.toggle('hidden',!settings.showSec);
+  $('dateDisplay').classList.toggle('hidden',!settings.showDate);
+  $('ampmDisplay').classList.toggle('hidden',!settings.showAmPm);
+  document.body.dataset.theme=settings.theme;
+  document.querySelectorAll('.theme-option').forEach(o=>o.classList.toggle('active',o.dataset.theme===settings.theme));
+}
+function save(){localStorage.setItem('infinity_clock_settings',JSON.stringify(settings))}
+
+function update(){
+  if(mode==='clock'){
+    const n=new Date();let h=n.getHours(),ampm='';
+    if(settings.format==='12'){ampm=h>=12?'PM':'AM';h=h%12||12}
+    const a=String(h).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0'),s=String(n.getSeconds()).padStart(2,'0');
+    renderDigits(a,m,s);
+    $('ampmDisplay').textContent=ampm;
+    $('dateDisplay').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  }else if(mode==='stopwatch'){
+    const ms=swElapsed+(swRunning?Date.now()-swStart:0);
+    const totalSec=Math.floor(ms/1000);
+    const mins=String(Math.min(99,Math.floor(totalSec/60))).padStart(2,'0');
+    const secs=String(totalSec%60).padStart(2,'0');
+    const cs=String(Math.floor((ms%1000)/10)).padStart(2,'0');
+    renderDigits(mins,secs,cs);
+  }else if(mode==='timer'){
+    if(tmRunning){
+      const left=tmEnd-Date.now();
+      if(left<=0){
+        tmRunning=false;tmTotalMs=0;
+        $('tmStartBtn').textContent='Start';
+        $('tmStatus').textContent="Time's up!";
+        playBeep();
+      }else{
+        tmTotalMs=left;
+      }
     }
+    const totalSec=Math.max(0,Math.ceil(tmTotalMs/1000));
+    const mins=String(Math.min(99,Math.floor(totalSec/60))).padStart(2,'0');
+    const secs=String(totalSec%60).padStart(2,'0');
+    renderDigits(mins,secs,'00');
+  }
+}
 
-    function setMode(nextMode) {
-      mode = nextMode;
-      document.querySelectorAll(".mode").forEach(button =>
-        button.classList.toggle("active", button.dataset.mode === mode)
-      );
-      watchControls.classList.toggle("hidden", mode !== "stopwatch");
-      timerEntry.classList.toggle("hidden", mode !== "timer");
-      timerControls.classList.toggle("hidden", mode !== "timer");
-      dateLine.textContent = "";
-      message.textContent = "";
-      update();
+document.querySelectorAll('.mode-pill-btn').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+window.addEventListener('resize',moveModeSlider);
+
+$('swStartBtn').onclick=()=>{
+  if(swRunning){
+    swElapsed+=Date.now()-swStart;swRunning=false;
+    $('swStartBtn').textContent='Start';$('swStatus').textContent='Paused';
+  }else{
+    swStart=Date.now();swRunning=true;
+    $('swStartBtn').textContent='Pause';$('swStatus').textContent='Running';
+  }
+  update();
+};
+$('swResetBtn').onclick=()=>{
+  swRunning=false;swElapsed=0;
+  $('swStartBtn').textContent='Start';$('swStatus').textContent='Ready';
+  update();
+};
+
+$('tmStartBtn').onclick=()=>{
+  if(tmRunning){
+    tmTotalMs=Math.max(0,tmEnd-Date.now());tmRunning=false;
+    $('tmStartBtn').textContent='Start';$('tmStatus').textContent='Paused';
+  }else{
+    if(tmTotalMs<=0){
+      const m=Math.max(0,Math.min(99,Number($('timerMin').value)||0));
+      const s=Math.max(0,Math.min(59,Number($('timerSec').value)||0));
+      tmTotalMs=(m*60+s)*1000;
     }
+    if(tmTotalMs<=0){$('tmStatus').textContent='Set time';return}
+    tmEnd=Date.now()+tmTotalMs;tmRunning=true;
+    $('tmStartBtn').textContent='Pause';$('tmStatus').textContent='Running';
+  }
+  update();
+};
+$('tmResetBtn').onclick=()=>{
+  tmRunning=false;tmTotalMs=0;
+  $('tmStartBtn').textContent='Start';$('tmStatus').textContent='';
+  update();
+};
 
-    document.querySelectorAll(".mode").forEach(button =>
-      button.addEventListener("click", () => setMode(button.dataset.mode))
-    );
+const modal=$('settingsModal');
+$('settingsBtn').onclick=()=>modal.classList.add('active');
+$('closeModal').onclick=()=>modal.classList.remove('active');
+modal.onclick=e=>{if(e.target===modal)modal.classList.remove('active')};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('active')});
+document.querySelectorAll('.segment-btn').forEach(b=>b.onclick=()=>{settings.format=b.dataset.format;apply();save();update()});
+[['toggleSec','showSec'],['toggleDate','showDate'],['toggleAmPm','showAmPm']].forEach(([id,key])=>$(id).onclick=()=>{settings[key]=!settings[key];apply();save();update()});
+document.querySelectorAll('.theme-option').forEach(o=>o.onclick=()=>{settings.theme=o.dataset.theme;apply();save()});
 
-    document.getElementById("startWatch").addEventListener("click", event => {
-      if (watchRunning) {
-        watchElapsed += Date.now() - watchStartedAt;
-        watchRunning = false;
-        event.target.textContent = "Start";
-      } else {
-        watchStartedAt = Date.now();
-        watchRunning = true;
-        event.target.textContent = "Pause";
-      }
-      update();
-    });
-
-    document.getElementById("resetWatch").addEventListener("click", () => {
-      watchElapsed = 0;
-      watchRunning = false;
-      document.getElementById("startWatch").textContent = "Start";
-      update();
-    });
-
-    document.getElementById("startTimer").addEventListener("click", () => {
-      if (timerRunning) return;
-      if (timerRemaining <= 0) {
-        const mins = Number(document.getElementById("minutes").value) || 0;
-        const secs = Number(document.getElementById("seconds").value) || 0;
-        timerRemaining = mins * 60 + secs;
-      }
-      if (timerRemaining <= 0) {
-        message.textContent = "Enter a time first.";
-        return;
-      }
-      timerEndsAt = Date.now() + timerRemaining * 1000;
-      timerRunning = true;
-      message.textContent = "";
-      update();
-    });
-
-    document.getElementById("resetTimer").addEventListener("click", () => {
-      timerRunning = false;
-      timerRemaining = 0;
-      display.textContent = "00:00";
-      message.textContent = "";
-    });
-
-    function update() {
-      if (mode === "clock") {
-        const now = new Date();
-        display.textContent = now.toLocaleTimeString([], { hour12: true });
-        dateLine.textContent = now.toLocaleDateString([], {
-          weekday: "long", month: "long", day: "numeric", year: "numeric"
-        });
-      } else if (mode === "stopwatch") {
-        const elapsed = watchElapsed + (watchRunning ? Date.now() - watchStartedAt : 0);
-        display.textContent = formatTime(elapsed / 1000);
-      } else if (mode === "timer") {
-        if (timerRunning) {
-          timerRemaining = Math.max(0, Math.ceil((timerEndsAt - Date.now()) / 1000));
-          if (timerRemaining === 0) {
-            timerRunning = false;
-            message.textContent = "Timer finished!";
-          }
-        }
-        display.textContent = formatTime(timerRemaining, false);
-      }
-    }
-
-    setInterval(update, 200);
-    update();
-  </script>
+apply();
+moveModeSlider();
+update();
+setInterval(update,50);
+</script>
 </body>
 </html>
