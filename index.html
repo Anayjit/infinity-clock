@@ -12,9 +12,9 @@
 [data-theme=clean]{--bg:radial-gradient(circle at 20% 20%,#334155,#0f172a 70%);--accent:#64748b;--dot:#f8fafc;--glow:0 0 14px rgba(248,250,252,.7)}
 [data-theme=midnight]{--bg:radial-gradient(circle at 20% 20%,#1e293b,#030712 70%);--accent:#4f46e5;--dot:#818cf8;--glow:0 0 14px rgba(129,140,248,.75)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:grid;place-items:center;overflow:hidden;transition:background .5s}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:grid;place-items:center;overflow-x:hidden;transition:background .5s}
 .ambient{position:fixed;width:520px;height:520px;border-radius:50%;background:var(--accent);opacity:.25;filter:blur(130px);pointer-events:none}
-.container{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:20px}
+.container{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:20px;margin:55px 0 70px}
 .brand{font-size:11px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--muted)}
 .clock-card,.modal-card{background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.04));border:1px solid var(--border);box-shadow:0 28px 70px rgba(0,0,0,.45),inset 0 1px rgba(255,255,255,.25);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px)}
 .clock-card{position:relative;border-radius:30px;padding:74px 42px 26px;display:flex;flex-direction:column;gap:24px}
@@ -26,25 +26,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .group-spacing{margin-right:10px}
 .digit-grid{display:grid;grid-template-columns:repeat(4,14px);grid-template-rows:repeat(7,14px);gap:7px}
 .digit-grid.sec-digit{grid-template-columns:repeat(4,10px);grid-template-rows:repeat(7,10px);gap:5px}
-.dot{width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.06);transition:box-shadow .2s,transform .2s,filter .2s}
+.dot{width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.06)}
 .dot.active{background:var(--dot);box-shadow:var(--glow)}
 .colon{display:flex;flex-direction:column;gap:19px;padding:0 5px}
 .colon-dot{width:12px;height:12px;border-radius:50%;background:var(--dot);box-shadow:var(--glow);animation:pulse 2s infinite}
 .sec-group{display:flex;align-items:center;gap:8px;margin-left:8px;padding-left:12px;border-left:1px solid rgba(255,255,255,.14)}
 @keyframes pulse{50%{opacity:.4;transform:scale(.85)}}
-@keyframes dotAlarm{
-  0%,100%{filter:brightness(1);transform:scale(1);box-shadow:var(--glow)}
-  50%{filter:brightness(1.65);transform:scale(1.18);box-shadow:0 0 22px var(--dot),0 0 38px var(--dot)}
-}
-.clock-display.timer-ringing .dot.active,
-.clock-display.timer-ringing .colon-dot{animation:dotAlarm .6s ease-in-out infinite}
+@keyframes dotAlarm{0%,100%{filter:brightness(1);transform:scale(1);box-shadow:var(--glow)}50%{filter:brightness(1.65);transform:scale(1.18);box-shadow:0 0 22px var(--dot),0 0 38px var(--dot)}}
+.clock-display.timer-ringing .dot.active,.clock-display.timer-ringing .colon-dot{animation:dotAlarm .6s ease-in-out infinite}
 .info{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:var(--muted)}
 .mode-controls{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12)}
 .action-btn{border:1px solid var(--border);border-radius:999px;padding:8px 18px;color:#fff;background:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:transform .15s,opacity .15s}
 .action-btn:hover{transform:scale(1.03)}
 .action-btn.secondary{background:rgba(255,255,255,.14)}
 .status-pill{margin-left:auto;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.3px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.3);color:#e2e8f0;transition:all .2s}
-.status-pill.running{background:rgba(249,115,22,.35);border-color:#fb923c;color:#fff7ed;box-shadow:0 0 16px rgba(249,115,22,.7)}
+.status-pill.running{background:rgba(249,115,22,.28);border-color:#fb923c;color:#ffedd5;box-shadow:0 0 14px rgba(249,115,22,.6)}
+.timer-setup{display:flex;justify-content:center;gap:12px}
+.timer-field{display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--muted);font-size:11px;font-weight:600}
+.timer-field input{width:75px;padding:8px 6px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.25);color:#fff;text-align:center;font:inherit;font-size:16px;outline:none}
+.timer-field input:focus{border-color:var(--accent);box-shadow:0 0 12px color-mix(in srgb,var(--accent),transparent 55%)}
+.timer-field input:disabled{opacity:.55;cursor:not-allowed}
+.timer-error{color:#fecaca;text-align:center;font-size:12px;margin-top:-12px}
 .settings-btn{position:absolute;right:10px;bottom:-48px;width:38px;height:38px;border:1px solid var(--border);border-radius:50%;background:rgba(255,255,255,.1);color:var(--muted);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(15px);z-index:5}
 .settings-btn:hover{background:var(--glass-light);color:#fff;transform:scale(1.06)}
 .modal-overlay{position:fixed;inset:0;background:rgba(3,1,12,.58);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s;z-index:9999;padding:20px}
@@ -70,14 +72,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .theme-option:hover,.theme-option.active{color:#fff;border-color:var(--accent);background:color-mix(in srgb,var(--accent),transparent 70%)}
 .hidden{display:none!important}
 @media(max-width:520px){
-  .clock-card{padding:68px 18px 24px}
-  .mode-switch{top:14px;right:14px}
-  .mode-btn{padding:6px 10px;font-size:11px}
-  .clock-display{gap:9px}
-  .digit-group{gap:7px}
-  .digit-grid{grid-template-columns:repeat(4,11px);grid-template-rows:repeat(7,11px);gap:5px}
-  .colon-dot{width:9px;height:9px}
-  .theme-grid{grid-template-columns:repeat(2,1fr)}
+ .clock-card{padding:68px 18px 24px}
+ .mode-switch{top:14px;right:14px}
+ .mode-btn{padding:6px 10px;font-size:11px}
+ .clock-display{gap:9px}
+ .digit-group{gap:7px}
+ .digit-grid{grid-template-columns:repeat(4,11px);grid-template-rows:repeat(7,11px);gap:5px}
+ .colon-dot{width:9px;height:9px}
+ .theme-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:440px){
+ .clock-card{padding-left:12px;padding-right:12px}
+ .clock-display{gap:4px}
+ .digit-group{gap:4px}
+ .digit-grid{grid-template-columns:repeat(4,8px);grid-template-rows:repeat(7,8px);gap:4px}
+ .digit-grid.sec-digit{grid-template-columns:repeat(4,6px);grid-template-rows:repeat(7,6px);gap:3px}
+ .sec-group{gap:4px;margin-left:2px;padding-left:5px}
+ .group-spacing{margin-right:2px}
+ .colon{padding:0 2px;gap:12px}
 }
 </style>
 </head>
@@ -91,87 +103,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <button type="button" class="mode-btn" data-mode="stopwatch">Stopwatch</button>
       <button type="button" class="mode-btn" data-mode="timer">Timer</button>
     </div>
-
     <div class="clock-display" id="clockDisplay">
-      <div class="digit-group">
-        <div class="digit-grid" data-digit="h1"></div>
-        <div class="digit-grid group-spacing" data-digit="h2"></div>
-      </div>
+      <div class="digit-group"><div class="digit-grid" data-digit="h1"></div><div class="digit-grid group-spacing" data-digit="h2"></div></div>
       <div class="colon"><i class="colon-dot"></i><i class="colon-dot"></i></div>
-      <div class="digit-group">
-        <div class="digit-grid" data-digit="m1"></div>
-        <div class="digit-grid" data-digit="m2"></div>
-      </div>
+      <div class="digit-group"><div class="digit-grid" data-digit="m1"></div><div class="digit-grid" data-digit="m2"></div></div>
       <div class="sec-group hidden" id="secGroup">
         <div class="colon"><i class="colon-dot" style="width:8px;height:8px"></i><i class="colon-dot" style="width:8px;height:8px"></i></div>
-        <div class="digit-group">
-          <div class="digit-grid sec-digit" data-digit="s1"></div>
-          <div class="digit-grid sec-digit" data-digit="s2"></div>
-        </div>
+        <div class="digit-group"><div class="digit-grid sec-digit" data-digit="s1"></div><div class="digit-grid sec-digit" data-digit="s2"></div></div>
       </div>
     </div>
-
-    <div class="info" id="infoRow">
-      <span id="ampmDisplay">PM</span>
-      <span id="dateDisplay">Wed, Nov 18</span>
+    <div class="info" id="infoRow"><span id="ampmDisplay"></span><span id="dateDisplay"></span></div>
+    <div class="timer-setup hidden" id="timerSetup">
+      <label class="timer-field">Hours<input id="timerHours" type="number" min="0" max="99" step="1" value="0" inputmode="numeric"></label>
+      <label class="timer-field">Minutes<input id="timerMinutes" type="number" min="0" max="59" step="1" value="0" inputmode="numeric"></label>
+      <label class="timer-field">Seconds<input id="timerSeconds" type="number" min="0" max="59" step="1" value="0" inputmode="numeric"></label>
     </div>
-
+    <div class="timer-error hidden" id="timerError" role="alert"></div>
     <div class="mode-controls hidden" id="modeControls">
       <button type="button" class="action-btn" id="startBtn">Start</button>
       <button type="button" class="action-btn secondary" id="resetBtn">Reset</button>
-      <span class="status-pill" id="modeStatus">Ready</span>
+      <span class="status-pill" id="modeStatus" aria-live="polite">Ready</span>
     </div>
-
     <button type="button" class="settings-btn" id="settingsBtn" aria-label="Open settings">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2v3m0 14v3M4.93 4.93l2.12 2.12m9.9 9.9 2.12 2.12M2 12h3m14 0h3M4.93 19.07l2.12-2.12m9.9-9.9 2.12-2.12"/>
-        <circle cx="12" cy="12" r="4"/>
-      </svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v3m0 14v3M4.93 4.93l2.12 2.12m9.9 9.9 2.12 2.12M2 12h3m14 0h3M4.93 19.07l2.12-2.12m9.9-9.9 2.12-2.12"/><circle cx="12" cy="12" r="4"/></svg>
     </button>
   </section>
 </main>
-
 <div class="modal-overlay" id="settingsModal">
   <section class="modal-card" role="dialog" aria-modal="true" aria-label="Clock settings">
-    <header class="modal-header">
-      <div class="modal-title">Clock Settings</div>
-      <button type="button" class="close-btn" id="closeModal">&times;</button>
-    </header>
+    <header class="modal-header"><div class="modal-title">Clock Settings</div><button type="button" class="close-btn" id="closeModal" aria-label="Close settings">&times;</button></header>
     <div class="settings-group">
-      <div class="setting-row">
-        <span>Clock format</span>
-        <div class="segmented-control">
-          <button type="button" class="segment-btn active" data-format="12">12-hour</button>
-          <button type="button" class="segment-btn" data-format="24">24-hour</button>
-        </div>
-      </div>
-      <div class="setting-row">
-        <span>Show seconds</span>
-        <div class="toggle-switch" id="toggleSec"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="setting-row">
-        <span>Show date</span>
-        <div class="toggle-switch active" id="toggleDate"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="setting-row">
-        <span>Show AM / PM</span>
-        <div class="toggle-switch active" id="toggleAmPm"><div class="toggle-thumb"></div></div>
-      </div>
-      <div class="theme-wrap">
-        <span>Theme</span>
-        <div class="theme-grid">
-          <div class="theme-option active" data-theme="violet">Violet Glass</div>
-          <div class="theme-option" data-theme="sunset">Sunset Glow</div>
-          <div class="theme-option" data-theme="ocean">Ocean Blue</div>
-          <div class="theme-option" data-theme="mint">Mint Aurora</div>
-          <div class="theme-option" data-theme="clean">Clean White</div>
-          <div class="theme-option" data-theme="midnight">Midnight Glass</div>
-        </div>
-      </div>
+      <div class="setting-row"><span>Clock format</span><div class="segmented-control"><button type="button" class="segment-btn active" data-format="12">12-hour</button><button type="button" class="segment-btn" data-format="24">24-hour</button></div></div>
+      <div class="setting-row"><span>Show seconds</span><div class="toggle-switch" id="toggleSec"><div class="toggle-thumb"></div></div></div>
+      <div class="setting-row"><span>Show date</span><div class="toggle-switch active" id="toggleDate"><div class="toggle-thumb"></div></div></div>
+      <div class="setting-row"><span>Show AM / PM</span><div class="toggle-switch active" id="toggleAmPm"><div class="toggle-thumb"></div></div></div>
+      <div class="theme-wrap"><span>Theme</span><div class="theme-grid">
+        <div class="theme-option active" data-theme="violet">Violet Glass</div><div class="theme-option" data-theme="sunset">Sunset Glow</div><div class="theme-option" data-theme="ocean">Ocean Blue</div><div class="theme-option" data-theme="mint">Mint Aurora</div><div class="theme-option" data-theme="clean">Clean White</div><div class="theme-option" data-theme="midnight">Midnight Glass</div>
+      </div></div>
     </div>
   </section>
 </div>
-
 <script>
 const patterns = {
   0:[1,1,1,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,1,1,1],
@@ -185,7 +156,7 @@ const patterns = {
   8:[1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1],
   9:[1,1,1,1,1,0,0,1,1,0,0,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1]
 };
-
+const $ = id => document.getElementById(id);
 const grids = {};
 document.querySelectorAll('.digit-grid').forEach(g => {
   grids[g.dataset.digit] = [];
@@ -196,260 +167,169 @@ document.querySelectorAll('.digit-grid').forEach(g => {
     grids[g.dataset.digit].push(d);
   }
 });
-
 function render(k, n) {
   (grids[k] || []).forEach((d, i) => d.classList.toggle('active', patterns[n]?.[i] === 1));
 }
-
-let settings = { format: '12', showSec: false, showDate: true, showAmPm: true, theme: 'violet' };
-try {
-  Object.assign(settings, JSON.parse(localStorage.getItem('infinity_clock_settings') || '{}'));
-} catch (e) {}
-
-const $ = id => document.getElementById(id);
-
+let settings = {format:'12',showSec:false,showDate:true,showAmPm:true,theme:'violet'};
+try { Object.assign(settings, JSON.parse(localStorage.getItem('infinity_clock_settings') || '{}')); } catch (e) {}
 let currentMode = 'clock';
-let stopwatchRunning = false;
-let stopwatchElapsed = 0;
-let stopwatchStartedAt = 0;
-let timerRunning = false;
-let timerRemaining = 0;
-let timerEndsAt = 0;
-
-let audioCtx = null;
-let alarmInterval = null;
-let alarmStopTimeout = null;
+let stopwatchRunning = false, stopwatchElapsed = 0, stopwatchStartedAt = 0;
+let timerRunning = false, timerRemaining = 0, timerEndsAt = 0, timerFinished = false;
+let audioCtx = null, alarmInterval = null, alarmStopTimeout = null, alarmActive = false;
+const timerFields = ['timerHours','timerMinutes','timerSeconds'];
 
 function ensureAudio() {
-  if (!audioCtx) {
+  try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (Ctx) audioCtx = new Ctx();
-  }
-  if (audioCtx && audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
+    if (!audioCtx && Ctx) audioCtx = new Ctx();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+  } catch (e) { /* Visual alert still works without audio. */ }
 }
-
 function playRingChime() {
-  if (!audioCtx) return;
-  const now = audioCtx.currentTime;
-  [0, 0.16, 0.32].forEach((offset, idx) => {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(idx === 2 ? 1046.5 : 880, now + offset);
-    gain.gain.setValueAtTime(0.001, now + offset);
-    gain.gain.exponentialRampToValueAtTime(0.25, now + offset + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.14);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(now + offset);
-    osc.stop(now + offset + 0.15);
-  });
+  if (!audioCtx || audioCtx.state !== 'running') return;
+  try {
+    const now = audioCtx.currentTime;
+    [0, .16, .32].forEach((offset, idx) => {
+      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(idx === 2 ? 1046.5 : 880, now + offset);
+      gain.gain.setValueAtTime(.001, now + offset);
+      gain.gain.exponentialRampToValueAtTime(.25, now + offset + .02);
+      gain.gain.exponentialRampToValueAtTime(.001, now + offset + .14);
+      osc.connect(gain); gain.connect(audioCtx.destination);
+      osc.start(now + offset); osc.stop(now + offset + .15);
+    });
+  } catch (e) {}
 }
-
+function stopAlarm() {
+  alarmActive = false;
+  $('clockDisplay').classList.remove('timer-ringing');
+  clearInterval(alarmInterval); clearTimeout(alarmStopTimeout);
+  alarmInterval = null; alarmStopTimeout = null;
+}
 function startAlarm() {
   stopAlarm();
+  alarmActive = true;
   $('clockDisplay').classList.add('timer-ringing');
-  ensureAudio();
-  playRingChime();
+  ensureAudio(); playRingChime();
   alarmInterval = setInterval(playRingChime, 900);
-  alarmStopTimeout = setTimeout(() => {
-    if (alarmInterval) {
-      clearInterval(alarmInterval);
-      alarmInterval = null;
-    }
-  }, 15000);
+  alarmStopTimeout = setTimeout(() => { clearInterval(alarmInterval); alarmInterval = null; }, 15000);
 }
-
-function stopAlarm() {
-  $('clockDisplay').classList.remove('timer-ringing');
-  if (alarmInterval) {
-    clearInterval(alarmInterval);
-    alarmInterval = null;
-  }
-  if (alarmStopTimeout) {
-    clearTimeout(alarmStopTimeout);
-    alarmStopTimeout = null;
-  }
-}
-
 function apply() {
   document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('active', b.dataset.format === settings.format));
-  [['toggleSec','showSec'], ['toggleDate','showDate'], ['toggleAmPm','showAmPm']].forEach(([id, key]) => $(id).classList.toggle('active', settings[key]));
+  [['toggleSec','showSec'],['toggleDate','showDate'],['toggleAmPm','showAmPm']].forEach(([id,key]) => $(id).classList.toggle('active',settings[key]));
   if (currentMode === 'clock') {
     $('secGroup').classList.toggle('hidden', !settings.showSec);
     $('dateDisplay').classList.toggle('hidden', !settings.showDate);
     $('ampmDisplay').classList.toggle('hidden', !settings.showAmPm);
   }
   document.body.dataset.theme = settings.theme;
-  document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active', o.dataset.theme === settings.theme));
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.toggle('active',o.dataset.theme === settings.theme));
 }
-
-function save() {
-  localStorage.setItem('infinity_clock_settings', JSON.stringify(settings));
+function save() { try { localStorage.setItem('infinity_clock_settings', JSON.stringify(settings)); } catch (e) {} }
+function setStatus(text,running) { $('modeStatus').textContent=text; $('modeStatus').classList.toggle('running',running); }
+function setTimerInputs(seconds) {
+  const n = Math.max(0,Math.floor(seconds));
+  $('timerHours').value = Math.floor(n / 3600);
+  $('timerMinutes').value = Math.floor(n % 3600 / 60);
+  $('timerSeconds').value = n % 60;
 }
-
-function setStatus(text, running) {
-  const status = $('modeStatus');
-  status.textContent = text;
-  status.classList.toggle('running', running);
+function readTimerInputs() {
+  const values = timerFields.map(id => $(id).value.trim());
+  if (values.some(v => v === '')) return null;
+  const [h,m,s] = values.map(Number);
+  if (![h,m,s].every(Number.isInteger) || h < 0 || h > 99 || m < 0 || m > 59 || s < 0 || s > 59) return null;
+  return h*3600 + m*60 + s;
 }
-
+function showTimerError(message) { $('timerError').textContent=message; $('timerError').classList.toggle('hidden',!message); }
+function setInputsDisabled(disabled) { timerFields.forEach(id => $(id).disabled=disabled); }
 function showDigits(totalSeconds) {
-  const whole = Math.max(0, Math.floor(totalSeconds));
-  const hours = Math.min(99, Math.floor(whole / 3600));
-  const minutes = Math.floor((whole % 3600) / 60);
-  const seconds = whole % 60;
-
-  const h = String(hours).padStart(2, '0');
-  const m = String(minutes).padStart(2, '0');
-  const s = String(seconds).padStart(2, '0');
-
-  [['h1', h[0]], ['h2', h[1]], ['m1', m[0]], ['m2', m[1]], ['s1', s[0]], ['s2', s[1]]].forEach(x => render(x[0], x[1]));
+  const whole=Math.max(0,Math.floor(totalSeconds));
+  const h=String(Math.min(99,Math.floor(whole/3600))).padStart(2,'0');
+  const m=String(Math.floor((whole%3600)/60)).padStart(2,'0');
+  const s=String(whole%60).padStart(2,'0');
+  [['h1',h[0]],['h2',h[1]],['m1',m[0]],['m2',m[1]],['s1',s[0]],['s2',s[1]]].forEach(x => render(x[0],x[1]));
 }
-
+function refreshControls() {
+  if (currentMode === 'clock') return;
+  const running=currentMode === 'timer' ? timerRunning : stopwatchRunning;
+  $('startBtn').textContent=currentMode === 'timer' && alarmActive ? 'Stop alarm' : (running ? 'Pause' : 'Start');
+  setStatus(currentMode === 'timer' && timerFinished ? 'Finished' : (running ? 'Running' : 'Ready'),running);
+  setInputsDisabled(timerRunning);
+}
 function update() {
-  if (currentMode === 'clock') {
-    const n = new Date();
-    let h = n.getHours(), ampm = '';
-    if (settings.format === '12') {
-      ampm = h >= 12 ? 'PM' : 'AM';
-      h = h % 12 || 12;
-    }
-    const a = String(h).padStart(2, '0');
-    const m = String(n.getMinutes()).padStart(2, '0');
-    const s = String(n.getSeconds()).padStart(2, '0');
-    [['h1', a[0]], ['h2', a[1]], ['m1', m[0]], ['m2', m[1]], ['s1', s[0]], ['s2', s[1]]].forEach(x => render(x[0], x[1]));
-    $('ampmDisplay').textContent = ampm;
-    $('dateDisplay').textContent = n.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-    return;
-  }
-
-  if (currentMode === 'stopwatch') {
-    const elapsed = stopwatchElapsed + (stopwatchRunning ? Date.now() - stopwatchStartedAt : 0);
-    showDigits(elapsed / 1000);
-    return;
-  }
-
+  // Check the timer even when Clock or Stopwatch is selected.
   if (timerRunning) {
-    timerRemaining = Math.max(0, Math.ceil((timerEndsAt - Date.now()) / 1000));
+    timerRemaining=Math.max(0,Math.ceil((timerEndsAt-Date.now())/1000));
     if (timerRemaining === 0) {
-      timerRunning = false;
-      $('startBtn').textContent = 'Start';
-      setStatus('Finished', false);
-      startAlarm();
+      timerRunning=false; timerFinished=true;
+      setTimerInputs(0); setInputsDisabled(false); startAlarm(); refreshControls();
     }
   }
-  showDigits(timerRemaining);
+  if (currentMode === 'clock') {
+    const n=new Date(); let h=n.getHours(), ampm='';
+    if (settings.format === '12') { ampm=h>=12?'PM':'AM'; h=h%12||12; }
+    const a=String(h).padStart(2,'0'), m=String(n.getMinutes()).padStart(2,'0'), s=String(n.getSeconds()).padStart(2,'0');
+    [['h1',a[0]],['h2',a[1]],['m1',m[0]],['m2',m[1]],['s1',s[0]],['s2',s[1]]].forEach(x => render(x[0],x[1]));
+    $('ampmDisplay').textContent=ampm;
+    $('dateDisplay').textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  } else if (currentMode === 'stopwatch') {
+    showDigits((stopwatchElapsed+(stopwatchRunning?Date.now()-stopwatchStartedAt:0))/1000);
+  } else showDigits(timerRemaining);
 }
-
 function selectMode(mode) {
-  stopAlarm();
-  currentMode = mode;
-  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-
-  const isClock = mode === 'clock';
-  $('infoRow').classList.toggle('hidden', !isClock);
-  $('modeControls').classList.toggle('hidden', isClock);
-
-  if (isClock) {
-    apply();
-  } else {
-    $('secGroup').classList.remove('hidden');
-    const isRunning = (mode === 'stopwatch' && stopwatchRunning) || (mode === 'timer' && timerRunning);
-    $('startBtn').textContent = isRunning ? 'Pause' : 'Start';
-    setStatus(isRunning ? 'Running' : 'Ready', isRunning);
-  }
-  update();
+  currentMode=mode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active',b.dataset.mode===mode));
+  $('infoRow').classList.toggle('hidden',mode!=='clock');
+  $('modeControls').classList.toggle('hidden',mode==='clock');
+  $('timerSetup').classList.toggle('hidden',mode!=='timer');
+  if (mode !== 'timer') showTimerError('');
+  if (mode==='clock') apply(); else $('secGroup').classList.remove('hidden');
+  refreshControls(); update();
 }
-
-document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => selectMode(b.dataset.mode));
-
-$('startBtn').onclick = () => {
-  stopAlarm();
-  if (currentMode === 'stopwatch') {
-    if (stopwatchRunning) {
-      stopwatchElapsed += Date.now() - stopwatchStartedAt;
-      stopwatchRunning = false;
-    } else {
-      stopwatchStartedAt = Date.now();
-      stopwatchRunning = true;
-    }
-    $('startBtn').textContent = stopwatchRunning ? 'Pause' : 'Start';
-    setStatus(stopwatchRunning ? 'Running' : 'Ready', stopwatchRunning);
-  } else if (currentMode === 'timer') {
-    ensureAudio();
+document.querySelectorAll('.mode-btn').forEach(b => b.onclick=() => selectMode(b.dataset.mode));
+timerFields.forEach(id => $(id).addEventListener('input',() => {
+  if (timerRunning) return;
+  if (alarmActive) stopAlarm();
+  timerFinished=false; showTimerError('');
+  const seconds=readTimerInputs();
+  if (seconds!==null) timerRemaining=seconds;
+  refreshControls(); update();
+}));
+$('startBtn').onclick=() => {
+  if (currentMode==='stopwatch') {
+    if (stopwatchRunning) { stopwatchElapsed+=Date.now()-stopwatchStartedAt; stopwatchRunning=false; }
+    else { stopwatchStartedAt=Date.now(); stopwatchRunning=true; }
+  } else if (currentMode==='timer') {
+    if (alarmActive) { stopAlarm(); refreshControls(); return; }
     if (timerRunning) {
-      timerRemaining = Math.max(0, Math.ceil((timerEndsAt - Date.now()) / 1000));
-      timerRunning = false;
-      $('startBtn').textContent = 'Start';
-      setStatus('Ready', false);
+      timerRemaining=Math.max(0,Math.ceil((timerEndsAt-Date.now())/1000));
+      if (timerRemaining===0) { update(); return; }
+      timerRunning=false; setTimerInputs(timerRemaining);
     } else {
-      if (timerRemaining <= 0) {
-        const entered = prompt('Timer duration in seconds:', '60');
-        if (entered === null) return;
-        const seconds = Number(entered);
-        if (!Number.isFinite(seconds) || seconds <= 0) {
-          alert('Enter a timer duration greater than zero.');
-          return;
-        }
-        timerRemaining = Math.floor(seconds);
-      }
-      timerEndsAt = Date.now() + timerRemaining * 1000;
-      timerRunning = true;
-      $('startBtn').textContent = 'Pause';
-      setStatus('Running', true);
+      const seconds=readTimerInputs();
+      if (seconds===null) { showTimerError('Use whole numbers: hours 0–99, minutes and seconds 0–59.'); return; }
+      if (seconds===0) { showTimerError('Set a time greater than zero.'); return; }
+      showTimerError(''); ensureAudio(); timerFinished=false;
+      timerRemaining=seconds; timerEndsAt=Date.now()+seconds*1000; timerRunning=true;
     }
   }
-  update();
+  refreshControls(); update();
 };
-
-$('resetBtn').onclick = () => {
-  stopAlarm();
-  if (currentMode === 'stopwatch') {
-    stopwatchRunning = false;
-    stopwatchElapsed = 0;
-  } else if (currentMode === 'timer') {
-    timerRunning = false;
-    timerRemaining = 0;
-  }
-  $('startBtn').textContent = 'Start';
-  setStatus('Ready', false);
-  update();
+$('resetBtn').onclick=() => {
+  if (currentMode==='stopwatch') { stopwatchRunning=false; stopwatchElapsed=0; }
+  else if (currentMode==='timer') { stopAlarm(); timerRunning=false; timerRemaining=0; timerFinished=false; setTimerInputs(0); showTimerError(''); }
+  refreshControls(); update();
 };
-
-const modal = $('settingsModal');
-$('settingsBtn').onclick = () => modal.classList.add('active');
-$('closeModal').onclick = () => modal.classList.remove('active');
-modal.onclick = e => { if (e.target === modal) modal.classList.remove('active'); };
-document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.classList.remove('active'); });
-
-document.querySelectorAll('.segment-btn').forEach(b => b.onclick = () => {
-  settings.format = b.dataset.format;
-  apply();
-  save();
-  update();
-});
-
-[['toggleSec','showSec'], ['toggleDate','showDate'], ['toggleAmPm','showAmPm']].forEach(([id, key]) => {
-  $(id).onclick = () => {
-    settings[key] = !settings[key];
-    apply();
-    save();
-    update();
-  };
-});
-
-document.querySelectorAll('.theme-option').forEach(o => o.onclick = () => {
-  settings.theme = o.dataset.theme;
-  apply();
-  save();
-});
-
-apply();
-update();
-setInterval(update, 200);
+const modal=$('settingsModal');
+$('settingsBtn').onclick=() => modal.classList.add('active');
+$('closeModal').onclick=() => modal.classList.remove('active');
+modal.onclick=e => { if(e.target===modal) modal.classList.remove('active'); };
+document.addEventListener('keydown',e => { if(e.key==='Escape') modal.classList.remove('active'); });
+document.querySelectorAll('.segment-btn').forEach(b => b.onclick=() => { settings.format=b.dataset.format; apply(); save(); update(); });
+[['toggleSec','showSec'],['toggleDate','showDate'],['toggleAmPm','showAmPm']].forEach(([id,key]) => { $(id).onclick=() => { settings[key]=!settings[key]; apply(); save(); update(); }; });
+document.querySelectorAll('.theme-option').forEach(o => o.onclick=() => { settings.theme=o.dataset.theme; apply(); save(); });
+apply(); update(); setInterval(update,200);
 </script>
 </body>
 </html>
