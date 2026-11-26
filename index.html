@@ -26,19 +26,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 .group-spacing{margin-right:10px}
 .digit-grid{display:grid;grid-template-columns:repeat(4,14px);grid-template-rows:repeat(7,14px);gap:7px}
 .digit-grid.sec-digit{grid-template-columns:repeat(4,10px);grid-template-rows:repeat(7,10px);gap:5px}
-.dot{width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.06)}
+.dot{width:100%;height:100%;border-radius:50%;background:rgba(255,255,255,.06);transition:box-shadow .2s,transform .2s,filter .2s}
 .dot.active{background:var(--dot);box-shadow:var(--glow)}
 .colon{display:flex;flex-direction:column;gap:19px;padding:0 5px}
 .colon-dot{width:12px;height:12px;border-radius:50%;background:var(--dot);box-shadow:var(--glow);animation:pulse 2s infinite}
 .sec-group{display:flex;align-items:center;gap:8px;margin-left:8px;padding-left:12px;border-left:1px solid rgba(255,255,255,.14)}
 @keyframes pulse{50%{opacity:.4;transform:scale(.85)}}
+@keyframes dotAlarm{
+  0%,100%{filter:brightness(1);transform:scale(1);box-shadow:var(--glow)}
+  50%{filter:brightness(1.65);transform:scale(1.18);box-shadow:0 0 22px var(--dot),0 0 38px var(--dot)}
+}
+.clock-display.timer-ringing .dot.active,
+.clock-display.timer-ringing .colon-dot{animation:dotAlarm .6s ease-in-out infinite}
 .info{display:flex;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);font-size:13px;color:var(--muted)}
 .mode-controls{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12)}
 .action-btn{border:1px solid var(--border);border-radius:999px;padding:8px 18px;color:#fff;background:var(--accent);font:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:transform .15s,opacity .15s}
 .action-btn:hover{transform:scale(1.03)}
 .action-btn.secondary{background:rgba(255,255,255,.14)}
 .status-pill{margin-left:auto;padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.3px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.3);color:#e2e8f0;transition:all .2s}
-.status-pill.running{background:rgba(249,115,22,.28);border-color:#fb923c;color:#ffedd5;box-shadow:0 0 14px rgba(249,115,22,.6)}
+.status-pill.running{background:rgba(249,115,22,.35);border-color:#fb923c;color:#fff7ed;box-shadow:0 0 16px rgba(249,115,22,.7)}
 .settings-btn{position:absolute;right:10px;bottom:-48px;width:38px;height:38px;border:1px solid var(--border);border-radius:50%;background:rgba(255,255,255,.1);color:var(--muted);cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(15px);z-index:5}
 .settings-btn:hover{background:var(--glass-light);color:#fff;transform:scale(1.06)}
 .modal-overlay{position:fixed;inset:0;background:rgba(3,1,12,.58);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s;z-index:9999;padding:20px}
@@ -86,7 +92,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
       <button type="button" class="mode-btn" data-mode="timer">Timer</button>
     </div>
 
-    <div class="clock-display">
+    <div class="clock-display" id="clockDisplay">
       <div class="digit-group">
         <div class="digit-grid" data-digit="h1"></div>
         <div class="digit-grid group-spacing" data-digit="h2"></div>
@@ -210,6 +216,64 @@ let timerRunning = false;
 let timerRemaining = 0;
 let timerEndsAt = 0;
 
+let audioCtx = null;
+let alarmInterval = null;
+let alarmStopTimeout = null;
+
+function ensureAudio() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (Ctx) audioCtx = new Ctx();
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+}
+
+function playRingChime() {
+  if (!audioCtx) return;
+  const now = audioCtx.currentTime;
+  [0, 0.16, 0.32].forEach((offset, idx) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(idx === 2 ? 1046.5 : 880, now + offset);
+    gain.gain.setValueAtTime(0.001, now + offset);
+    gain.gain.exponentialRampToValueAtTime(0.25, now + offset + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.14);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now + offset);
+    osc.stop(now + offset + 0.15);
+  });
+}
+
+function startAlarm() {
+  stopAlarm();
+  $('clockDisplay').classList.add('timer-ringing');
+  ensureAudio();
+  playRingChime();
+  alarmInterval = setInterval(playRingChime, 900);
+  alarmStopTimeout = setTimeout(() => {
+    if (alarmInterval) {
+      clearInterval(alarmInterval);
+      alarmInterval = null;
+    }
+  }, 15000);
+}
+
+function stopAlarm() {
+  $('clockDisplay').classList.remove('timer-ringing');
+  if (alarmInterval) {
+    clearInterval(alarmInterval);
+    alarmInterval = null;
+  }
+  if (alarmStopTimeout) {
+    clearTimeout(alarmStopTimeout);
+    alarmStopTimeout = null;
+  }
+}
+
 function apply() {
   document.querySelectorAll('.segment-btn').forEach(b => b.classList.toggle('active', b.dataset.format === settings.format));
   [['toggleSec','showSec'], ['toggleDate','showDate'], ['toggleAmPm','showAmPm']].forEach(([id, key]) => $(id).classList.toggle('active', settings[key]));
@@ -274,12 +338,14 @@ function update() {
       timerRunning = false;
       $('startBtn').textContent = 'Start';
       setStatus('Finished', false);
+      startAlarm();
     }
   }
   showDigits(timerRemaining);
 }
 
 function selectMode(mode) {
+  stopAlarm();
   currentMode = mode;
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
 
@@ -301,6 +367,7 @@ function selectMode(mode) {
 document.querySelectorAll('.mode-btn').forEach(b => b.onclick = () => selectMode(b.dataset.mode));
 
 $('startBtn').onclick = () => {
+  stopAlarm();
   if (currentMode === 'stopwatch') {
     if (stopwatchRunning) {
       stopwatchElapsed += Date.now() - stopwatchStartedAt;
@@ -312,6 +379,7 @@ $('startBtn').onclick = () => {
     $('startBtn').textContent = stopwatchRunning ? 'Pause' : 'Start';
     setStatus(stopwatchRunning ? 'Running' : 'Ready', stopwatchRunning);
   } else if (currentMode === 'timer') {
+    ensureAudio();
     if (timerRunning) {
       timerRemaining = Math.max(0, Math.ceil((timerEndsAt - Date.now()) / 1000));
       timerRunning = false;
@@ -338,6 +406,7 @@ $('startBtn').onclick = () => {
 };
 
 $('resetBtn').onclick = () => {
+  stopAlarm();
   if (currentMode === 'stopwatch') {
     stopwatchRunning = false;
     stopwatchElapsed = 0;
